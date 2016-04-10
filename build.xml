@@ -1,0 +1,64 @@
+<project name="Warc grader" default='all' basedir="." >
+
+  <!-- Default property values, if not overridden elsewhere: -->
+  <property name='build' location='build' />
+  <property name='app.version' value='1.0'/>
+  <property name='app.name' value='Warc grader'/>
+  <tstamp><format property='build.time' pattern='yyyy-MM-dd HH:mm:ss'/></tstamp>
+
+  <path id='external.classpath'>
+    <fileset dir='lib'>
+       <include name='*.jar'/>
+    </fileset>
+  </path>
+
+  <fileset id='src.files' dir='src'>
+    <exclude name='**/*.java'/>
+  </fileset>
+
+  <condition property='jdk.javadoc.visible' value='true' else='false'> 
+    <http url='http://java.sun.com/javase/6/docs/api/' />
+  </condition>
+  
+  <echo>
+    Application: ${app.name} ${app.version}
+    Build File : ${ant.file} 
+    Run Date   : ${build.time}
+    Run by     : ${user.name}
+    Build Dir  : ${build}
+    Base Dir   : ${basedir}
+    Java Home  : ${java.home}
+    Connected to the web   : ${jdk.javadoc.visible}
+  </echo>
+    
+  <echo message='Create build directory.'/>
+  <mkdir dir="${build}"/>
+
+  <!-- Define the targets. -->
+  <target name="init">
+    <mkdir dir="${build}/classes"/>
+  </target>
+  <target name='clean' description="Delete all build artifacts." >
+    <delete dir='${build}'/>
+  </target>
+  
+  <target name='compile' depends='init'>
+    <javac srcdir="src" destdir="${build}/classes">   
+      <classpath> <path refid="external.classpath" /></classpath>
+    </javac>
+  </target> 
+  <target name='jar' depends='compile'>
+    <jar  destfile="${build}/reader.jar"
+	  basedir="${build}/classes">
+      <zipgroupfileset dir="lib" includes="*.jar" />
+      <manifest>
+        <attribute name="Main-Class" value="ee.ut.cs.WarcReader"/>
+      </manifest>
+    </jar>
+  </target>  
+  <target name='all' 
+	depends='clean, jar'>
+    <echo>Finished creating all build artifacts.</echo>
+  </target>
+  
+</project>
