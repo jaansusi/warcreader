@@ -27,7 +27,7 @@ public class WarcReader {
 			*/
 			Iterator<ArchiveRecord> archIt = WARCReaderFactory.get(new File(args[0])).iterator();
 			while (archIt.hasNext()) {
-				System.out.println(archIt.next());
+				System.out.println(archIt.next().read());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
