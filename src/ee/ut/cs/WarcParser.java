@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 
@@ -30,25 +31,8 @@ import java.lang.management.ManagementFactory;
 public class WarcParser {
 
 
-  public Boolean parse (String html, String warcName, String domainUrl, String pageUrl) {
+  public Boolean parse (String TempFile, String warcDate, String domainUrl, String pageUrl, String warcPath) {
 	try {
-		//Create random file
-		
-		Integer rand;
-		int min = 1;
-		int max = 10000;
-		do {
-			rand = new Random().nextInt((max - min) + 1) + min;
-		} while (new File("TempFile-" + rand + ".html").exists());
-		File f = new File("TempFile-" + rand + ".html");
-		//System.out.println(f.getAbsolutePath() + " created");
-		
-		//Write to a TempFile
-		FileWriter fw = new FileWriter(f.getAbsolutePath());
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(html);
-		bw.close();
-		fw.close();
 		
 		//Warc creation date
 		String date = warcName.substring(4,12);
@@ -84,7 +68,7 @@ public class WarcParser {
 		} else */if (grader.equals("HTML")) {
 			String[] standards = {"A", "AA", "AAA"};
 			for (String std : standards) {
-				HashMap<String, String> array = p.pa11y(f.getAbsolutePath(), warcName, domainUrl+pageUrl, std);
+				HashMap<String, String> array = p.pa11y(warcPath, domainUrl+pageUrl, std);
 				array.put("warcDate", date);
 				if (array != null)
 					sql.postGradesCodeSniffer(array, domainUrl, pageUrl);
@@ -95,7 +79,6 @@ public class WarcParser {
 				//else
 				//	System.out.println("upload failed");
 		}
-		f.delete();
 		return true;
 //		if (f.delete())
 //			System.out.println("\t and file deleted.");
