@@ -25,92 +25,37 @@ import java.util.regex.PatternSyntaxException;
 
 
 public class Parser {
-	public JSONObject accessLint (String fileAddress) throws IOException, JSONException {
-		
+	public HashMap<String, String> pa11y(
+		String fileAddress, String url, String std) {
+
 		/*
 		 * Run process and read output
 		 */
-		Process process = new ProcessBuilder("access_lint", "audit", fileAddress).start();
-		InputStream is = process.getInputStream();
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader br = new BufferedReader(isr);
-		String line;
-		String answer = "";
-		br.readLine();
-		while ((line = br.readLine()) != null) {
-			//access_lint prints on "complete" on the last line, ignore that
-			if (line != "complete")
-				//Replace with colons to achieve accepted json rules
-				answer += line.replaceAll("=>", ":") + "\n";
-		}
+		System.out.print("Auditing ");
+		Process process = null;
+		String output = "";
+		try {
+			process = new ProcessBuilder("timeout", "30", "pa11y", "-s", "WCAG2" + std, "-r", "json", "file://" + fileAddress).start();
+			System.out.println("completed");
+			System.out.print("Output ");
+			InputStream is = process.getInputStream();
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
+			String line;
+			while ((line = br.readLine()) != null) {
+				output += line;
+			}
+			System.out.println("received with lenght " + output.length());
 		
-		JSONObject json;
-		try	{
-			json = new JSONObject(answer);
-		} catch (JSONException e) {
-			//No point in throwing it up anymore, have to deal with it anyway somewhere
-			System.out.println("JSON was not created as an object, prob faulty output: \n" + answer);
+		} catch (IOException e) {
 			e.printStackTrace();
-			//If json is not satisfactory, then no point in continuing
 			return null;
 		}
-		
-		
-        /*
-         * Find database values based on the key below and return the answer
-         */
-        JSONArray json2;
-        JSONObject jsonAns = new JSONObject();
-        
-		//System.out.println(JSONObject.getNames(json));
-		
-        String jsonTemp;
-		JSONObject jsonTranslate = getTransformer();
-		
-		//Iterate over every element in JSON object
-		
-		//json.keySet() = [FAIL, NA, PASS]
-        for (String el : json.keySet()) {
-        	
-        	//json2 contains all the elements with current value (FAIL/NA/PASS)
-        	json2 = json.getJSONArray(el);
-        	
-        	//Iterate over every FAIL/NA/PASS element and add them to SQL
-        	for (int i = 0; i < json2.length(); i++) {
-        		//Titles are received because based on them, the rules are found from
-        		//the jsonTranslate object which contains the corresponding titles and guideline numbers
-        		jsonTemp = new JSONObject(json2.get(i).toString()).get("title").toString();
-        		
-        		//The rule is added with the value of whether it passed, failed or was not applicable
-        		jsonAns.append(jsonTranslate.get(jsonTemp).toString(), el);
-        	}
-		}
-		
-		return jsonAns;
-		//<-----------------------------------------------<
-	}
-
-	public HashMap<String, String> pa11y(String fileAddress, String warc, String url, String std) throws IOException, JSONException {
-
-		/*
-		 * Run process and read output
-		 */
-		Process process = new ProcessBuilder("timeout", "30", "pa11y", "-s", "WCAG2" + std, "-r", "json", "file://" + fileAddress).start();
-		InputStream is = process.getInputStream();
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader br = new BufferedReader(isr);
-		String line;
-		String output = "";
-		while ((line = br.readLine()) != null) {
-			output += line;
-		}
-		
 		/*
 		 * Remove the first and last 2 symbols
 		 * Then split it into different pieces at },{
 		 * Then add {} around the pieces and BAM! We have a list of JSONObjects!
 		 */
-		//System.out.println("Output len is: " + output.length());
 		if (output.length() == 0) {
 			return null;
 		}
@@ -151,11 +96,13 @@ public class Parser {
 			//Add to CSV
 			
 			try {
-				File f = new File("../data.csv");
-				FileWriter fw = new FileWriter(f.getAbsolutePath(), true);
+				System.out.print("Writing to data.csv");
+				File csv = new File("../data.csv");
+				FileWriter fw = new FileWriter(csv.getAbsolutePath(), true);
 				BufferedWriter bw = new BufferedWriter(fw);
 				
-				
+				String warc = fileAddress.substring(fileAddress.lastIndexOf("/")+1, fileAddress.length());
+				System.out.println(warc);
 				String data = "\"" + warc + "\", \"" + url + "\", ";
 				for (String key : obj.keySet()) {
 					data += "\"" + obj.get(key).toString().replace(System.getProperty("line.separator"), "") + "\", ";
@@ -166,8 +113,8 @@ public class Parser {
 				
 				bw.close();
 				fw.close();
-				
-			} catch (FileNotFoundException e) {
+				System.out.println(" complete");
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}

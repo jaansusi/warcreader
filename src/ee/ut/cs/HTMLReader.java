@@ -20,24 +20,9 @@ import java.util.regex.Matcher;
 
 import ee.ut.cs.Decider;
 
-public class WarcReader {
+public class HTMLReader {
  
-	public static void main(String[] args) {
-		if (args.length != 1) {
-			System.out.println("Enter a warc name as argument");
-			System.exit(0);
-		}
-		try {
-			Iterator<ArchiveRecord> archIt = WARCReaderFactory.get(new File(args[0])).iterator();
-			while (archIt.hasNext()) {
-			    ArchiveRecord ar = archIt.next();
-			    logic(ar);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	public void logic (ArchiveRecord ar) {
+	public void parsePage (ArchiveRecord ar) {
 		ArchiveRecordHeader arh = ar.getHeader();
 		System.out.println("-------------------------------------------------------\n");
 		//System.out.println(arh.getHeaderFields());
