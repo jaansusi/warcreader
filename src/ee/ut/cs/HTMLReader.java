@@ -3,7 +3,8 @@ package ee.ut.cs;
 import org.archive.io.warc.WARCReaderFactory;
 import org.archive.io.ArchiveRecord;
 import org.archive.io.ArchiveRecordHeader;
-//import org.archive.io.ArchiveReader;
+import org.apache.commons.io.FileUtils;
+
 
 import java.io.StringReader;
 import java.io.BufferedReader;
@@ -22,23 +23,23 @@ import ee.ut.cs.Decider;
 
 public class HTMLReader {
  
-	public void parsePage (ArchiveRecord ar) {
+	public static void parsePage (ArchiveRecord ar) throws IOException {
 		ArchiveRecordHeader arh = ar.getHeader();
-		System.out.println("-------------------------------------------------------\n");
+		Boolean debug = false;
+		if (debug) System.out.println("-------------------------------------------------------\n");
 		//System.out.println(arh.getHeaderFields());
 		//Clean content-type
 		String type = arh.getHeaderValue("Content-Type").toString().split(";")[0]; 
 		//System.out.println(type);
-		
 		//If type is not what we wanted, we don't even bother reading it
 		if (!type.equals("application/http")) {
-			System.out.println("Wrong type: " + type);
-			System.out.println("Skipping cycle...\n");
+			if (debug) System.out.println("Wrong type: " + type);
+			if (debug) System.out.println("Skipping cycle...\n");
 			return;
 		}
 		
 		
-		System.out.println("Type OK: " + type);
+		if (debug) System.out.println("Type OK: " + type);
 		String warcDate = arh.getDate();
 		warcDate = warcDate.substring(0,10);
 		String url = arh.getUrl();
@@ -53,13 +54,13 @@ public class HTMLReader {
 		if (mat.find()) {
 			domainUrl = mat.group(2);
 			pageUrl = mat.group(3);
-			System.out.println("Url is " + url);
+			if (debug) System.out.println("Url is " + url);
 			System.out.println("Matcher groups: '" + domainUrl + "'  and  '" + pageUrl + "'");
 		} else {
-			System.out.println("Matcher didn't find anything from " + url);
+			if (debug) System.out.println("Matcher didn't find anything from " + url);
 			//Something went wrong with the regex matching, let's cancel
 			//this cycle, no point of uploading without the URL-s
-			System.out.println("Skipping cycle...\n");
+			if (debug) System.out.println("Skipping cycle...\n");
 			return;
 		}
 			
@@ -92,21 +93,25 @@ public class HTMLReader {
 		//Write to a TempFile
 		FileWriter fw = new FileWriter(tempFile.getAbsolutePath());
 		BufferedWriter bw = new BufferedWriter(fw);
-		/*
+		String output = "";
 		while ((str = reader.readLine()) != null) {
+
 			if (write) {
-				System.out.println(str);
-				bw.write(str);
+				output += str;
 			//Yes, there can be this string later in the html but this does not
 			//concern us anymore, we aren't cheking that by that time
-			} else if (str.contains("text\\/html")) {
+			} else if (str.contains("Content-Type:")) {
+			    if (str.contains("text/html")) {
 				//Write all the next lines to TempFile
-				write = true;
-			} else {
-				System.out.println(write + str);
+			        write = true;
+			    //If there is a Content-Type: but it isn't text/html
+			    //it is not the type we are looking for so skip
+			    } else return;
 			}
 		}
-		*/
+
+		FileUtils.write(tempFile, output, "UTF-8");
+		/*
 		String[] splitHtml = html.split(System.getProperty("line.separator"));
 		for (String line : splitHtml) {
 			//System.out.println("ASD" + line);
@@ -119,6 +124,7 @@ public class HTMLReader {
 				System.out.println(line);
 			}
 		}
+		*/
 		reader.close();
 		bw.close();
 		fw.close();
@@ -126,9 +132,9 @@ public class HTMLReader {
 		String warcAddress = arh.getHeaderValue("reader-identifier").toString();
 		String warcName = warcAddress.replaceAll(".*/","");
 		//Call out Decider with the data
-		System.out.println("Warc: " + warcName);
+		if (debug) System.out.println("Warc: " + warcName);
 		Boolean result = new Decider().parse(tempFile.getAbsolutePath(), warcDate, domainUrl, pageUrl, warcName, warcAddress);
 		tempFile.delete();
-		System.out.println();
+		if (debug) System.out.println();
 	}
 }

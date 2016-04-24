@@ -25,19 +25,16 @@ import java.util.regex.PatternSyntaxException;
 
 
 public class Parser {
-	public HashMap<String, String> pa11y(
+	public static HashMap<String, String> pa11y(
 		String fileAddress, String url, String std) {
 
 		/*
 		 * Run process and read output
 		 */
-		System.out.print("Auditing ");
 		Process process = null;
 		String output = "";
 		try {
 			process = new ProcessBuilder("timeout", "30", "pa11y", "-s", "WCAG2" + std, "-r", "json", "file://" + fileAddress).start();
-			System.out.println("completed");
-			System.out.print("Output ");
 			InputStream is = process.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
@@ -96,13 +93,13 @@ public class Parser {
 			//Add to CSV
 			
 			try {
-				System.out.print("Writing to data.csv");
+				//System.out.print("Writing to data.csv");
 				File csv = new File("../data.csv");
 				FileWriter fw = new FileWriter(csv.getAbsolutePath(), true);
 				BufferedWriter bw = new BufferedWriter(fw);
 				
 				String warc = fileAddress.substring(fileAddress.lastIndexOf("/")+1, fileAddress.length());
-				System.out.println(warc);
+				//System.out.println(warc);
 				String data = "\"" + warc + "\", \"" + url + "\", ";
 				for (String key : obj.keySet()) {
 					data += "\"" + obj.get(key).toString().replace(System.getProperty("line.separator"), "") + "\", ";
@@ -113,7 +110,7 @@ public class Parser {
 				
 				bw.close();
 				fw.close();
-				System.out.println(" complete");
+				//System.out.println(" complete");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -166,7 +163,7 @@ public class Parser {
 		return returned;
 	}
 	
-	private String parse (String entry) {
+	private static String parse (String entry) {
 		Pattern p = Pattern.compile("WCAG2(\\S+)\\.Principle(\\d)\\.Guideline(\\d)_(\\d)\\..*");
 		Matcher m = p.matcher(entry);
 		

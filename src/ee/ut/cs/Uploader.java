@@ -13,7 +13,7 @@ import java.lang.management.ManagementFactory;
 
 public class Uploader {
 
-	private static String host = "jdbc:mysql://localhost:3306/mydb";
+	private static String host = "jdbc:mariadb://localhost:3306/mydb";
 	private static String user = "jaan";
 	private static String pass = "passwd";
 
@@ -53,7 +53,7 @@ public class Uploader {
 			//Return true if upload didn't throw errors
 			return true;
 		} catch (SQLException e) {
-			System.out.println(e);
+		    System.out.println(e);
 		    System.out.println("SQLException: " + e.getMessage());
 		    System.out.println("SQLState: " + e.getSQLState());
 		    System.out.println("VendorError: " + e.getErrorCode());

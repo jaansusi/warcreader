@@ -52,7 +52,7 @@
 	  basedir="${build}/classes">
       <zipgroupfileset dir="lib" includes="*.jar" />
       <manifest>
-        <attribute name="Main-Class" value="ee.ut.cs.WarcReader"/>
+        <attribute name="Main-Class" value="ee.ut.cs.Main"/>
       </manifest>
     </jar>
     <copy file="data/domains.csv" todir="build"/>

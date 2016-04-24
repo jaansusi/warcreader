@@ -31,18 +31,18 @@ import java.lang.management.ManagementFactory;
 public class Decider {
 
 
-  public Boolean parse (String TempFile, String warcDate, String domainUrl, String pageUrl, String warcName, String warcAddress) {
+  public Boolean parse (String tempFile, String warcDate, String domainUrl, String pageUrl, String warcName, String warcAddress) {
 	/*
 	 * Audit
 	 */
-	Parser p = new Parser();
+	//Parser p = new Parser();
 	Uploader sql = new Uploader();
 	JSONObject j = new JSONObject();
 	
 	String[] standards = {"A", "AA", "AAA"};
 	for (String std : standards) {
-		HashMap<String, String> map = p.pa11y(warcAddress, domainUrl+pageUrl, std);
-		System.out.println(map.keySet());
+		HashMap<String, String> map = Parser.pa11y(tempFile, domainUrl+pageUrl, std);
+		//System.out.println(map.keySet());
 		map.put("warcDate", warcDate);
 		if (map != null)
 			sql.postGradesCodeSniffer(map, domainUrl, pageUrl);
