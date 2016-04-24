@@ -25,7 +25,7 @@ public class HTMLReader {
  
 	public static void parsePage (ArchiveRecord ar) throws IOException {
 		ArchiveRecordHeader arh = ar.getHeader();
-		Boolean debug = false;
+		Boolean debug = true;
 		if (debug) System.out.println("-------------------------------------------------------\n");
 		//System.out.println(arh.getHeaderFields());
 		//Clean content-type
@@ -67,16 +67,41 @@ public class HTMLReader {
 		//Now that we know that the type is right and the domain url has
 		//been found, check whether the domain is worth testing, is the 
 		//domain a part of the list that we're grading
+		
+		//TO-DO Add domain testing
+		
 		//Seems that type was okay, read data into a string
 		int a;
 		String html = "";
+		String line = "";
+		Boolean write = false;
+		//We only give lines after the Content-Type line for auditing
+		//so we start writing to file only after write is true
+		//Write to a TempFile
+
 		while ((a = ar.read()) != -1) {
-			html += (char) a;
-			//System.out.print((char)a);
+		    line += (char) a;
+		    if ((char) a == '\n') {
+			if (write) {
+			    html += line;
+			//Yes, there can be this string later in the html but this does not
+			//concern us anymore, we aren't cheking that by that time
+			} else if (line.contains("Content-Type:")) {
+			    if (line.contains("text/html")) {
+				//JACKPOT! This is the content we want!
+				//Write all the next lines in this record to TempFile
+				write = true;
+				line = "";
+			    //If there is a Content-Type: but it isn't text/html
+			    //it is not the type we are looking for so skip
+			    } else return;
+			}
+			//Empty variable so next line can be read in
+			line = "";
+		    }
 		}
+
 		//System.out.println(html);
-		BufferedReader reader = new BufferedReader(new StringReader(html));
-		String str;
 				
 		//Create a file to write to
 		Integer rand;
@@ -86,48 +111,10 @@ public class HTMLReader {
           		rand = new Random().nextInt((max - min) + 1) + min;
        		} while (new File("TempFile-" + rand + ".html").exists());
               		File tempFile = new File("TempFile-" + rand + ".html");
+		
+		//Write to the created file
+		FileUtils.write(tempFile, html, "UTF-8");
 
-		//We only give lines after the Content-Type line for auditing
-		//so we start writing to file only after write is true
-		Boolean write = false;
-		//Write to a TempFile
-		FileWriter fw = new FileWriter(tempFile.getAbsolutePath());
-		BufferedWriter bw = new BufferedWriter(fw);
-		String output = "";
-		while ((str = reader.readLine()) != null) {
-
-			if (write) {
-				output += str;
-			//Yes, there can be this string later in the html but this does not
-			//concern us anymore, we aren't cheking that by that time
-			} else if (str.contains("Content-Type:")) {
-			    if (str.contains("text/html")) {
-				//Write all the next lines to TempFile
-			        write = true;
-			    //If there is a Content-Type: but it isn't text/html
-			    //it is not the type we are looking for so skip
-			    } else return;
-			}
-		}
-
-		FileUtils.write(tempFile, output, "UTF-8");
-		/*
-		String[] splitHtml = html.split(System.getProperty("line.separator"));
-		for (String line : splitHtml) {
-			//System.out.println("ASD" + line);
-			if (write) {
-				bw.write(line);
-			} else if (line.contains("text")) {
-				write = true;
-				System.out.println("Found");
-			} else {
-				System.out.println(line);
-			}
-		}
-		*/
-		reader.close();
-		bw.close();
-		fw.close();
 		//replaceAll removes everything before the file name
 		String warcAddress = arh.getHeaderValue("reader-identifier").toString();
 		String warcName = warcAddress.replaceAll(".*/","");

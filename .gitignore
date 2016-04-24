@@ -2,3 +2,4 @@ build/*
 *.swp
 *.warc
 **/TempFile*
+nohup.out
