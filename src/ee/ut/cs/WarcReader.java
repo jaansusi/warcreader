@@ -19,14 +19,15 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import ee.ut.cs.HTMLReader;
+import ee.ut.cs.DomainChecker;
 
 public class WarcReader {
-    public static void readWarc (String warcAddress) {
+    public static void readWarc (String warcAddress, DomainChecker dom) {
 	try {
 	    Iterator<ArchiveRecord> archIt = WARCReaderFactory.get(new File(warcAddress)).iterator();
 		while (archIt.hasNext()) {
 		    ArchiveRecord ar = archIt.next();
-		    HTMLReader.parsePage(ar);
+		    HTMLReader.parsePage(ar, dom);
 		}
 	} catch (IOException e) {
 	    e.printStackTrace();

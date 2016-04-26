@@ -38,15 +38,23 @@ public class Decider {
 	//Parser p = new Parser();
 	Uploader sql = new Uploader();
 	JSONObject j = new JSONObject();
-	
+	HashMap<String, String> map = null; 
 	String[] standards = {"A", "AA", "AAA"};
 	for (String std : standards) {
-		HashMap<String, String> map = Parser.pa11y(tempFile, domainUrl+pageUrl, std);
-		//System.out.println(map.keySet());
-		map.put("warcDate", warcDate);
-		if (map != null)
+		try {
+		    map = Parser.pa11y(tempFile, domainUrl+pageUrl, std);
+		    //System.out.println(map.keySet());
+		    map.put("warcDate", warcDate);
+		    //System.out.println(map.keySet());
+		    if (map != null)
 			sql.postGradesCodeSniffer(map, domainUrl, pageUrl);
-					
+		    
+		} catch (java.lang.NullPointerException e) {
+		    e.printStackTrace();
+		    //for (String str : map.keySet().toArray()) {
+		    	//System.out.println(str + "=" + map.get(str));
+		    //}
+		}
 	}
 	return true;
   }

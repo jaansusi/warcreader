@@ -3,3 +3,4 @@ build/*
 *.warc
 **/TempFile*
 nohup.out
+data.csv

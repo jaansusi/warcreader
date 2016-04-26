@@ -42,8 +42,8 @@ public class Parser {
 			while ((line = br.readLine()) != null) {
 				output += line;
 			}
-			System.out.println("received with lenght " + output.length());
-		
+			//System.out.println("received with lenght " + output.length());
+			//if (output.length() < 1000) System.out.println(output);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;

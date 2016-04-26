@@ -92,7 +92,7 @@ public class Uploader {
 		String time = "'" + sdf.format(new Date()).toString() + "', ";
 		
 		//Combine everything
-		String sql = "INSERT INTO `html_codesniffer` (`domain`, `url`, `time`, " + columns + ") VALUES " + "('" + domain + "', '" + url + "', " + time + values + ");";
+		String sql = "INSERT INTO `new` (`domain`, `url`, `time`, " + columns + ") VALUES " + "('" + domain + "', '" + url + "', " + time + values + ");";
 		//System.out.println(sql);
 		
 		try {

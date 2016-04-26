@@ -55,7 +55,6 @@
         <attribute name="Main-Class" value="ee.ut.cs.Main"/>
       </manifest>
     </jar>
-    <copy file="data/domains.csv" todir="build"/>
   </target>  
   <target name='all' 
 	depends='clean, jar'>
