@@ -23,8 +23,7 @@ import ee.ut.cs.Decider;
 import ee.ut.cs.DomainChecker;
 
 public class HTMLReader {
- 
-	public static void parsePage (ArchiveRecord ar, DomainChecker domains) throws IOException {
+    public static void parsePage (ArchiveRecord ar, DomainChecker domains) throws IOException {
     	ArchiveRecordHeader arh = ar.getHeader();
 	Boolean debug = false;
 	if (debug) System.out.println("-------------------------------------------------------\n");
@@ -63,7 +62,7 @@ public class HTMLReader {
 		    //System.out.println(domainUrl);
 		    return;
 		}
-		System.out.println("Good URL: " + domainUrl);
+		if (debug) System.out.println("Good URL: " + domainUrl);
 	} else {
 		System.out.println("Matcher didn't find anything from " + url);
 		//Something went wrong with the regex matching, let's cancel

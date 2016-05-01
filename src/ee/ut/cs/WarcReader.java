@@ -21,13 +21,27 @@ import java.util.regex.Matcher;
 import ee.ut.cs.HTMLReader;
 import ee.ut.cs.DomainChecker;
 
-public class WarcReader {
-    public static void readWarc (String warcAddress, DomainChecker dom) {
+public class WarcReader implements Runnable {
+    private Thread t;
+    private String threadName;
+    private String warcAddress;
+    private DomainChecker domains;
+    
+    WarcReader (String warcAddress, DomainChecker domains) {
+	this.warcAddress = warcAddress;
+	this.domains = domains;
+    }
+
+    public void run() {
+	readWarc();
+    }
+
+    public void readWarc () {
 	try {
 	    Iterator<ArchiveRecord> archIt = WARCReaderFactory.get(new File(warcAddress)).iterator();
 		while (archIt.hasNext()) {
-		    ArchiveRecord ar = archIt.next();
-		    HTMLReader.parsePage(ar, dom);
+			ArchiveRecord ar = archIt.next();
+		    HTMLReader.parsePage(ar, domains);
 		}
 	} catch (IOException e) {
 	    e.printStackTrace();
