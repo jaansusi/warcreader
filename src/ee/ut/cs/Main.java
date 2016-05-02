@@ -32,9 +32,7 @@ public class Main {
 	    DomainChecker dom = new DomainChecker();
 	    List<String> warcs = FileUtils.readLines(warcsFile,"UTF-8");
 	    for (String curWarc : warcs) {
-		Process process = new ProcessBuilder("scp", "jaan@deepweb.ut.ee:/mnt/" + curWarc, System.getProperty("user.dir")+"/.").start();
-		process.waitFor();
-		Runnable wr = new WarcReader(System.getProperty("user.dir") + "/" + curWarc, dom);
+		Runnable wr = new WarcReader(curWarc, dom);
 		executor.execute(wr);
 		FileUtils.writeStringToFile(new File("data/audited"), curWarc+"\n", "UTF-8", true);
 		FileUtils.forceDelete(new File(curWarc));
@@ -44,7 +42,7 @@ public class Main {
 	    //Wait until all threads are done
 	    while (!executor.isTerminated()) {}
 
-	} catch (IOException | InterruptedException e) {
+	} catch (IOException e) {
 	    e.printStackTrace();
 	    System.exit(0);
 	}
