@@ -1,5 +1,7 @@
 package ee.ut.cs;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -164,7 +166,7 @@ public class Parser {
 	}
 	
 	private static String parse (String entry) {
-		Pattern p = Pattern.compile("WCAG2(\\S+)\\.Principle(\\d)\\.Guideline(\\d)_(\\d)\\..*");
+		Pattern p = Pattern.compile("WCAG2(\\S+)\\.Principle(\\d)\\.Guideline(\\d)_(\\d)\\.(\\d_\\d_\\d).*");
 		Matcher m = p.matcher(entry);
 		
 		if (m.find()) {
@@ -173,11 +175,12 @@ public class Parser {
 			//System.out.print(WCAGlevel + " - ");
 			
 			//Principle and guideline number, e.g "1.1.3"
-			String guideline = m.group(2) + "." + m.group(3) + "." + m.group(4);
+			String guideline = WCAGlevel + "." + StringUtils.join(m.group(5).split("_"), ".");
 			//System.out.println(guideline);
 			
 			return guideline;
 		}
+		System.out.println("Did not find correct SC values");
 		return null;
 	}
 

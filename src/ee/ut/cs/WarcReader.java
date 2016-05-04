@@ -19,20 +19,20 @@ import java.lang.InterruptedException;
 import java.lang.Process;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import ee.ut.cs.HTMLReader;
-import ee.ut.cs.DomainChecker;
 
 public class WarcReader implements Runnable {
     private Thread t;
     private String threadName;
     private String curWarc;
-    private DomainChecker domains;
+    private List<String> domains;
     
-    WarcReader (String curWarc, DomainChecker domains) {
+    WarcReader (String curWarc, List<String> domains) {
 	this.curWarc = curWarc;
 	this.domains = domains;
     }
@@ -42,13 +42,17 @@ public class WarcReader implements Runnable {
     }
     private void readWarc () {
 	try {
-	    System.out.println("Started parsing " + curWarc);
+	    //System.out.println("Started parsing " + curWarc + ", dom len = " + domains.size());
 	    Process process = new ProcessBuilder("scp", "jaan@deepweb.ut.ee:/mnt/" + curWarc, ".").start();
 	    process.waitFor();
-	    Iterator<ArchiveRecord> archIt = WARCReaderFactory.get(new File("./" + curWarc)).iterator();
+	    Iterator<ArchiveRecord> archIt = WARCReaderFactory.get(new File(curWarc)).iterator();
 		while (archIt.hasNext()) {
+		    try {
 			ArchiveRecord ar = archIt.next();
-		    HTMLReader.parsePage(ar, domains);
+			HTMLReader.parsePage(ar, domains);
+		    } catch (java.lang.NullPointerException e) {
+			e.printStackTrace();
+		    }
 		}
 	    FileUtils.writeStringToFile(new File("data/audited"), curWarc+"\n", "UTF-8", true);
 	    FileUtils.forceDelete(new File(curWarc));

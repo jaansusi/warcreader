@@ -14,18 +14,21 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
+import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import ee.ut.cs.Decider;
-import ee.ut.cs.DomainChecker;
 
 public class HTMLReader {
-    public static void parsePage (ArchiveRecord ar, DomainChecker domains) throws IOException {
+
+    private static final Boolean debug = false;
+
+	public static void parsePage (ArchiveRecord ar, List<String> domains) throws IOException {
     	ArchiveRecordHeader arh = ar.getHeader();
-	Boolean debug = false;
+	
 	if (debug) System.out.println("-------------------------------------------------------\n");
 	//System.out.println(arh.getHeaderFields());
 	//Clean content-type
@@ -57,9 +60,22 @@ public class HTMLReader {
 		if (debug) System.out.println("Url is " + url);
 		if (debug) System.out.println("Matcher groups: '" + domainUrl + "'  and  '" + pageUrl + "'");
 		
-		//If domain is NOT what we want, skip this page
-		if (!domains.check(domainUrl)) {
-		    //System.out.println(domainUrl);
+		try {
+		    Boolean domainCheck = false;
+		    for (String str : domains) {
+			if (str.contains(domainUrl))
+			    domainCheck = true;
+		    }
+
+		    //If domain is NOT what we want, skip this page
+		    if (!domainCheck) {
+			//System.out.println(domainUrl);
+		        return;
+		    }
+		} catch (java.lang.NullPointerException e) {
+		    e.printStackTrace();
+		    System.out.println("Domains: " + domains);
+		    System.out.println("Something went wrong with domain check, skipping cycle...\n");
 		    return;
 		}
 		if (debug) System.out.println("Good URL: " + domainUrl);
@@ -81,22 +97,27 @@ public class HTMLReader {
 	int a;
 	String html = "";
 	String line = "";
+	Boolean find = false;
 	Boolean write = false;
 	//We only give lines after the Content-Type line for auditing
 	//so we start writing to file only after write is true
 	//Write to a TempFile
-		while ((a = ar.read()) != -1) {
+	while ((a = ar.read()) != -1) {
 	    line += (char) a;
+	    //If we found content type, it fit and and now we find a <
+	    //assume it is the start of html
+	    if ((char) a == '<' && find)
+		write = true;
 	    if ((char) a == '\n') {
 		if (write) {
-		    html += line;
+		    html += line;		    
 		//Yes, there can be this string later in the html but this does not
 		//concern us anymore, we aren't cheking that by that time
 		} else if (line.contains("Content-Type:")) {
 		    if (line.contains("text/html")) {
 			//JACKPOT! This is the content we want!
-			//Write all the next lines in this record to TempFile
-			write = true;
+			//Now find a "<" which we will take as a start of html
+			find = true;
 			line = "";
 		    //If there is a Content-Type: but it isn't text/html
 		    //it is not the type we are looking for so skip
@@ -124,7 +145,11 @@ public class HTMLReader {
 	String warcName = warcAddress.replaceAll(".*/","");
 	//Call out Decider with the data
 	if (debug) System.out.println("Warc: " + warcName);
-	Boolean result = new Decider().parse(tempFile.getAbsolutePath(), warcDate, domainUrl, pageUrl, warcName, warcAddress);
+	try {
+	    Boolean result = new Decider().parse(tempFile.getAbsolutePath(), warcDate, domainUrl, pageUrl, warcName, warcAddress);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
 	tempFile.delete();
 	if (debug) System.out.println();
     }

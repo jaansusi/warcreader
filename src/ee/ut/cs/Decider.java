@@ -27,11 +27,12 @@ import java.util.Random;
 import java.util.HashMap;
 
 import java.lang.management.ManagementFactory;
+import java.lang.NullPointerException;
 
 public class Decider {
 
 
-  public Boolean parse (String tempFile, String warcDate, String domainUrl, String pageUrl, String warcName, String warcAddress) {
+  public Boolean parse (String tempFile, String warcDate, String domainUrl, String pageUrl, String warcName, String warcAddress) throws Exception {
 	/*
 	 * Audit
 	 */
@@ -49,8 +50,11 @@ public class Decider {
 		    if (map != null)
 			sql.postGradesCodeSniffer(map, domainUrl, pageUrl);
 		    
-		} catch (java.lang.NullPointerException e) {
-		    e.printStackTrace();
+		} catch (NullPointerException e) {
+		    String info = "";
+		    info += map.size() + "\n";
+		    
+		    throw new Exception("NullPointer @ Decider.parse\n" + info, e);
 		    //for (String str : map.keySet().toArray()) {
 		    	//System.out.println(str + "=" + map.get(str));
 		    //}

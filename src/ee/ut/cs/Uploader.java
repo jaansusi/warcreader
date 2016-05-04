@@ -45,11 +45,13 @@ public class Uploader {
 		//System.out.println(sql);
 		
 		//Try creating the connection and uploading the values
+		Connection con = null;
 		try {
-			Connection con = DriverManager.getConnection(host, user, pass);
+			con = DriverManager.getConnection(host, user, pass);
 			Statement query = con.createStatement();
 			
 			query.execute(sql);
+			con.close();
 			//Return true if upload didn't throw errors
 			return true;
 		} catch (SQLException e) {
@@ -92,17 +94,19 @@ public class Uploader {
 		String time = "'" + sdf.format(new Date()).toString() + "', ";
 		
 		//Combine everything
-		String sql = "INSERT INTO `new` (`domain`, `url`, `time`, " + columns + ") VALUES " + "('" + domain + "', '" + url + "', " + time + values + ");";
+		String sql = "INSERT INTO `withLevels` (`domain`, `url`, `time`, " + columns + ") VALUES " + "('" + domain + "', '" + url + "', " + time + values + ");";
 		//System.out.println(sql);
-		
+		sql.replace("'", "\'");
 		try {
 			Connection con = DriverManager.getConnection(host, user, pass);
 			Statement query = con.createStatement();
 			query.execute(sql);
+			
 			//If upload successful, return true
 			return true;
 		} catch (SQLException e) {
-			System.out.println("Exception: " + e.getMessage());
+			
+			System.out.println("Exception: " + e.getCause());
 			//If error is thrown, return that upload failed
 			return false;
 		}
