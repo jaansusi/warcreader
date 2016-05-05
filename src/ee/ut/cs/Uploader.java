@@ -101,7 +101,8 @@ public class Uploader {
 			Connection con = DriverManager.getConnection(host, user, pass);
 			Statement query = con.createStatement();
 			query.execute(sql);
-			
+			sql = sql.replace("'", "\\'");
+			con.close();
 			//If upload successful, return true
 			return true;
 		} catch (SQLException e) {

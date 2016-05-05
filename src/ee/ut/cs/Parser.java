@@ -49,6 +49,9 @@ public class Parser {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
+		} catch (java.lang.NullPointerException e) {
+			System.out.println("Caught NullPointerException in Parser");
+			System.out.println("Pa11y output: \n" + output);
 		}
 		/*
 		 * Remove the first and last 2 symbols
@@ -56,6 +59,7 @@ public class Parser {
 		 * Then add {} around the pieces and BAM! We have a list of JSONObjects!
 		 */
 		if (output.length() == 0) {
+			System.out.println("Output null, return null");
 			return null;
 		}
 		//Remove first and last symbols
@@ -72,6 +76,7 @@ public class Parser {
 				//If can't, print stacktrace but continue
 				System.out.println("Couldn't create a JSONObject into ArrayList with: \n" + str);
 				e.printStackTrace();
+				return null;
 			}
 
 		}

@@ -51,6 +51,7 @@ public class WarcReader implements Runnable {
 			ArchiveRecord ar = archIt.next();
 			HTMLReader.parsePage(ar, domains);
 		    } catch (java.lang.NullPointerException e) {
+			System.out.println("Something wrong with HTMLReader");
 			e.printStackTrace();
 		    }
 		}

@@ -41,6 +41,7 @@ public class Decider {
 	JSONObject j = new JSONObject();
 	HashMap<String, String> map = null; 
 	String[] standards = {"A", "AA", "AAA"};
+	Boolean deleteTemp = true;
 	for (String std : standards) {
 		try {
 		    map = Parser.pa11y(tempFile, domainUrl+pageUrl, std);
@@ -52,12 +53,12 @@ public class Decider {
 		    
 		} catch (NullPointerException e) {
 		    String info = "";
-		    info += map.size() + "\n";
-		    
+		    if (map != null)
+			info += map.size() + "\n";
+		    else
+			System.out.println("Pa11y returned null, throwing NPE");
 		    throw new Exception("NullPointer @ Decider.parse\n" + info, e);
-		    //for (String str : map.keySet().toArray()) {
-		    	//System.out.println(str + "=" + map.get(str));
-		    //}
+
 		}
 	}
 	return true;

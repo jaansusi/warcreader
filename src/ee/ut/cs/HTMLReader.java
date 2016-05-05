@@ -147,10 +147,10 @@ public class HTMLReader {
 	if (debug) System.out.println("Warc: " + warcName);
 	try {
 	    Boolean result = new Decider().parse(tempFile.getAbsolutePath(), warcDate, domainUrl, pageUrl, warcName, warcAddress);
+	    tempFile.delete();
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    
 	}
-	tempFile.delete();
 	if (debug) System.out.println();
     }
 }
