@@ -66,7 +66,7 @@ public class Uploader {
 		
 		
 	}
-	public Boolean postGradesCodeSniffer(HashMap<String, String> input, String domain, String url) {
+	public Boolean postGradesCodeSniffer(HashMap<String, String> input) {
 		//Returns true on successful upload, otherwise false
 		
 		
@@ -83,10 +83,6 @@ public class Uploader {
 			values = values.substring(0, values.length()-2);
 		}
 		
-		//If both are not null, add a comma between them
-		
-		
-		
 		//Start generating the sql
 		
 		//Date
@@ -94,7 +90,7 @@ public class Uploader {
 		String time = "'" + sdf.format(new Date()).toString() + "', ";
 		
 		//Combine everything
-		String sql = "INSERT INTO `withLevels` (`domain`, `url`, `time`, " + columns + ") VALUES " + "('" + domain + "', '" + url + "', " + time + values + ");";
+		String sql = "INSERT INTO `withLevels` (`time`, " + columns + ") VALUES " + "(" + time + values + ");";
 		//System.out.println(sql);
 		sql.replace("'", "\'");
 		try {

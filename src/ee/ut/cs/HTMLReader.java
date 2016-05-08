@@ -47,9 +47,6 @@ public class HTMLReader {
 	warcDate = warcDate.substring(0,10);
 	String url = arh.getUrl();
 	
-	//Regex should look something like this
-	//Group 1 is domain and group 2 is page url
-	//(?:https?:\\/\\/)?((?:[a-zA-Z0-9]+\\.)+[a-zA-Z0-9]+)(?:\\/(.*))?
 	Pattern pat = Pattern.compile("(https?:\\/\\/)?([^\\/]*)(\\/.*)?");
 	Matcher mat = pat.matcher(url);
 	String domainUrl = null;
@@ -62,6 +59,7 @@ public class HTMLReader {
 		
 		try {
 		    Boolean domainCheck = false;
+		    //Check if domain is what we want
 		    for (String str : domains) {
 			if (str.contains(domainUrl))
 			    domainCheck = true;

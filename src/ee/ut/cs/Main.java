@@ -35,13 +35,14 @@ public class Main {
 	    for (String curWarc : warcs) {
 		Runnable wr = new WarcReader(curWarc, domains);
 		executor.execute(wr);
+		FileUtils.write(new File("data/audited"), curWarc + "\n", true);
 		//WarcReader wr = new WarcReader(curWarc, domains);
 		//wr.run();
 	    }
-	    //executor.shutdown();
+	    executor.shutdown();
 	    //Wait until all threads are done
-	    //while (!executor.isTerminated()) {}
-
+	    while (!executor.isTerminated()) {}
+	    
 	} catch (IOException e) {
 	    e.printStackTrace();
 	    System.exit(0);
