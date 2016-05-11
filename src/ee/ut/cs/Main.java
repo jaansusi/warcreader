@@ -18,14 +18,12 @@ import org.apache.commons.io.FileUtils;
 
 public class Main {
 
-    private static final int THREADS = 12;
-
     public static void main(String[] args) {
-	if (args.length != 1) {
-	    System.out.println("Enter a warc manifest name as an argument");
+	if (args.length != 2) {
+	    System.out.println("Usage: java -jar warcReader manifest thread_count");
 	    System.exit(0);
 	}
-	ExecutorService executor = Executors.newFixedThreadPool(THREADS);
+	ExecutorService executor = Executors.newFixedThreadPool(Integer.parseInt(args[1]));
 
 	File warcsFile = new File(args[0]);
 	try {
