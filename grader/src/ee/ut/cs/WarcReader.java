@@ -42,7 +42,6 @@ public class WarcReader implements Runnable {
     }
     private void readWarc () {
 	try {
-	    //System.out.println("Started parsing " + curWarc + ", dom len = " + domains.size());
 	    Process process = new ProcessBuilder("scp", "jaan@deepweb.ut.ee:/mnt/" + curWarc, ".").start();
 	    process.waitFor();
 	    Iterator<ArchiveRecord> archIt = WARCReaderFactory.get(new File(curWarc)).iterator();

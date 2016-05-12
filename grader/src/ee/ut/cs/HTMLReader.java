@@ -30,10 +30,10 @@ public class HTMLReader {
     	ArchiveRecordHeader arh = ar.getHeader();
 	
 	if (debug) System.out.println("-------------------------------------------------------\n");
-	//System.out.println(arh.getHeaderFields());
+	
 	//Clean content-type
 	String type = arh.getHeaderValue("Content-Type").toString().split(";")[0]; 
-	//System.out.println(type);
+	
 	//If type is not what we wanted, we don't even bother reading it
 	if (!type.equals("application/http")) {
 		if (debug) System.out.println("Wrong type: " + type);
@@ -67,7 +67,6 @@ public class HTMLReader {
 
 		    //If domain is NOT what we want, skip this page
 		    if (!domainCheck) {
-			//System.out.println(domainUrl);
 		        return;
 		    }
 		} catch (java.lang.NullPointerException e) {
@@ -88,8 +87,6 @@ public class HTMLReader {
 	//Now that we know that the type is right and the domain url has
 	//been found, check whether the domain is worth testing, is the 
 	//domain a part of the list that we're grading
-	
-	//TO-DO Add domain testing
 	
 	//Seems that type was okay, read data into a string
 	int a;
@@ -125,7 +122,6 @@ public class HTMLReader {
 		line = "";
 	    }
 	}
-	//System.out.println(html);
 			
 	//Create a file to write to
 	Integer rand;

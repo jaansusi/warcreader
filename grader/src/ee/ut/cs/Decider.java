@@ -36,7 +36,6 @@ public class Decider {
 	/*
 	 * Audit
 	 */
-	//Parser p = new Parser();
 	Uploader sql = new Uploader();
 	JSONObject j = new JSONObject();
 	HashMap<String, String> map = new HashMap<String, String>(); 
@@ -49,8 +48,6 @@ public class Decider {
 	for (String std : standards) {
 		try {
 		    HashMap<String, String> one = Parser.pa11y(tempFile, domainUrl+pageUrl, std);
-		    //System.out.println(map.keySet());
-		    //System.out.println(map.keySet());
 		    if (one != null)
 			map.putAll(one);
 			

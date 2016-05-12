@@ -28,14 +28,11 @@ public class Main {
 	File warcsFile = new File(args[0]);
 	try {
 	    List<String> domains = FileUtils.readLines(new File("data/domains.csv"), "UTF-8");
-	    //System.out.println(domains);
 	    List<String> warcs = FileUtils.readLines(warcsFile,"UTF-8");
 	    for (String curWarc : warcs) {
 		Runnable wr = new WarcReader(curWarc, domains);
 		executor.execute(wr);
 		FileUtils.write(new File("data/audited"), curWarc + "\n", true);
-		//WarcReader wr = new WarcReader(curWarc, domains);
-		//wr.run();
 	    }
 	    executor.shutdown();
 	    //Wait until all threads are done
@@ -45,12 +42,5 @@ public class Main {
 	    e.printStackTrace();
 	    System.exit(0);
 	}
-	//Read in
-	//Warcs, parsed_warcs
-	//
-	//Write to
-	//Parsed_warcs, parsed_warcs_time, 
     }
-
-
 }

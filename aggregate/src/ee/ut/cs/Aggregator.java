@@ -24,13 +24,15 @@ class Aggregator {
     private static Statement query;
     private static List<String> criteria;
     private static String date;
+    private static String table;
 
     public static void main(String[] args) {
-	if (args.length != 1) {
-	    System.out.println("Usage: java -jar aggr.jar YYYY-MM-DD");
+	if (args.length != 2) {
+	    System.out.println("Usage: java -jar aggr.jar table_name YYYY-MM-DD");
 	    System.exit(0);
 	}
-	date = args[0];
+	date = args[1];
+	table = args[0];
 	
 	Connection con = null;
 	try {
@@ -41,10 +43,10 @@ class Aggregator {
 	    
 	    //Retrieve all columns names of table and
 	    //insert all criteria into the criteria List
-	    createCriteria(query.executeQuery("DESCRIBE withLevels;"));
+	    createCriteria(query.executeQuery("DESCRIBE " + table + ";"));
 
 	    //Retrieve all distinct domains on given date
-	    ResultSet rs = query.executeQuery("SELECT distinct(domain) from withLevels where warcDate > \"" + date + "\";");
+	    ResultSet rs = query.executeQuery("SELECT distinct(domain) from " + table + " where warcDate > \"" + date + "\";");
 	    
 	    //Loop through all domains and aggregate their data
 	    while (rs.next()) {
@@ -146,8 +148,8 @@ class Aggregator {
 	//Add domain name and date as first elements, follow up with criteria scores
 	String ans = domain + ";" + scoreCounter + ";" + grade;// + ";" + aMis+aaMis+aaaMis;
 
-	for (Double db : scores)
-	    ans += ";" + db.toString().replace(".", ",");
+	//for (Double db : scores)
+	    //ans += ";" + db.toString().replace(".", ",");
 	try {
 	    FileUtils.write(new File("semi" + date + ".csv"), ans+"\n", true);
 	} catch (IOException e) {
@@ -295,7 +297,7 @@ class Aggregator {
 	   criteriaSQL += "`" + str.toString() + "`, ";
 	}
 	criteriaSQL = criteriaSQL.substring(0,criteriaSQL.length()-2);
-	criteriaSQL = "SELECT " + criteriaSQL + " FROM withLevels WHERE domain =\"" + domain + "\" AND warcDate > \"" + date + "\";";
+	criteriaSQL = "SELECT " + criteriaSQL + " FROM " + table + " WHERE domain =\"" + domain + "\" AND warcDate > \"" + date + "\";";
 	
 	return query.executeQuery(criteriaSQL);
     }

@@ -42,7 +42,6 @@ public class Uploader {
 		
 		//Combine sql
 		String sql = "INSERT INTO `access_lint` (" + fields + extraFields + ") VALUES (" + values + extraValues + ");";
-		//System.out.println(sql);
 		
 		//Try creating the connection and uploading the values
 		Connection con = null;
@@ -74,7 +73,6 @@ public class Uploader {
 		
 		//If not null, add to sql
 		if (input != null) {
-			//System.out.println(outputErr);
 			for (String str : input.keySet()) {
 				columns += "`" + str + "`, ";
 				values += "'" + input.get(str) + "', ";
@@ -91,7 +89,6 @@ public class Uploader {
 		
 		//Combine everything
 		String sql = "INSERT INTO `withLevels` (`time`, " + columns + ") VALUES " + "(" + time + values + ");";
-		//System.out.println(sql);
 		sql.replace("'", "\'");
 		try {
 			Connection con = DriverManager.getConnection(host, user, pass);

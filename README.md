@@ -1,1 +1,1 @@
-# warcreader
+# warcreader + aggregator
